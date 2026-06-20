@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ты • Новелла</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .heading { font-family: 'Playfair Display', Georgia, serif; }
+        .scene { 
+            background-size: contain; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            background-color: #000;
+            transition: background-image 0.5s ease; 
+        }
+        .dialogue-box { background: rgba(17, 17, 17, 0.92); border: 1px solid #3F3F46; }
+    </style>
+</head>
+<body class="bg-[#0C0C0C] text-white min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-[900px] w-full">
+        
+        <div class="flex justify-between items-center mb-4 px-2">
+            <div>
+                <div class="text-[#D4AF37] text-sm tracking-[3px]">ТЫ</div>
+                <div class="heading text-3xl font-bold">Новелла</div>
+            </div>
+            <button onclick="restart()" class="px-5 py-2 text-sm border border-[#3F3F46] hover:bg-[#1A1A1A] rounded-2xl">Начать заново</button>
+        </div>
+
+        <div id="scene" class="scene w-full aspect-[16/10] rounded-3xl overflow-hidden border border-[#3F3F46] shadow-2xl relative flex items-end"
+             style="background-image: url('image (6).jpg')">
+            
+            <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/70"></div>
+
+            <div class="relative w-full p-8 z-10">
+                <div class="dialogue-box max-w-3xl mx-auto rounded-3xl p-8">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <div class="w-3 h-3 bg-[#D4AF37] rounded-full"></div>
+                        <div class="text-[#D4AF37] text-sm font-medium tracking-wider">ТЫ</div>
+                    </div>
+
+                    <div id="dialogue-text" class="text-xl leading-relaxed min-h-[90px]"></div>
+
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="nextScene()" id="next-btn"
+                                class="flex items-center gap-x-2 px-8 py-3 bg-white text-black rounded-2xl font-semibold hover:bg-[#D4AF37]">
+                            <span id="next-text">Далее</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-888" src="888.mp3"></audio>
+
+    <script>
+        let currentScene = 0;
+
+        const scenes = [
+            { image: "image (6).jpg", text: "Я собираюсь использовать твоего туза😈😈😈" },
+            { image: "image (6).jpg", text: "Не бойся это не больно! ❤️😏" },
+            { image: "image (7).jpg", text: "Поворачивайся 😈😈😈 ❤️😏❤️😏" },
+            { image: "image (8).jpg", text: "❤️", isFinal: true }
+        ];
+
+        function updateScene() {
+            const scene = scenes[currentScene];
+            const sceneEl = document.getElementById('scene');
+            const textEl = document.getElementById('dialogue-text');
+            const nextBtn = document.getElementById('next-btn');
+            const nextText = document.getElementById('next-text');
+
+            sceneEl.style.backgroundImage = `url('${scene.image}')`;
+            textEl.innerHTML = scene.text;
+
+            if (scene.isFinal) {
+                nextText.innerHTML = 'Закончить';
+                nextBtn.onclick = finishStory;
+            } else {
+                nextText.innerHTML = 'Далее';
+                nextBtn.onclick = nextScene;
+            }
+        }
+
+        function nextScene() {
+            if (currentScene < scenes.length - 1) {
+                currentScene++;
+                updateScene();
+            }
+        }
+
+        function finishStory() {
+            const sceneEl = document.getElementById('scene');
+            const textEl = document.getElementById('dialogue-text');
+            const nextBtn = document.getElementById('next-btn');
+            const audio = document.getElementById('audio-888');
+
+            sceneEl.style.backgroundImage = 'none';
+            sceneEl.style.backgroundColor = '#000000';
+            sceneEl.style.border = 'none';
+
+            textEl.innerHTML = `
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-[120px] md:text-[160px] leading-none">❤️</div>
+                </div>
+            `;
+
+            nextBtn.style.display = 'none';
+
+            audio.currentTime = 0;
+            audio.play().catch(() => {
+                textEl.innerHTML += `
+                    <div class="text-center mt-8 text-sm text-[#666]">
+                        Нажми на сердечко, чтобы запустить музыку
+                    </div>
+                `;
+                textEl.onclick = () => audio.play();
+            });
+        }
+
+        function restart() {
+            currentScene = 0;
+            const sceneEl = document.getElementById('scene');
+            const nextBtn = document.getElementById('next-btn');
+
+            sceneEl.style.backgroundColor = '';
+            sceneEl.style.border = '1px solid #3F3F46';
+            nextBtn.style.display = 'flex';
+
+            document.getElementById('audio-888').pause();
+            updateScene();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('next-btn').click();
+            }
+            if (e.key.toLowerCase() === 'r') {
+                restart();
+            }
+        });
+
+        window.onload = updateScene;
+    </script>
+</body>
+</html>
